@@ -9,7 +9,7 @@ export function exportToPdf(elementId: string, filename: string) {
       margin: 10,
       filename,
       image: { type: "jpeg", quality: 0.95 },
-      html2canvas: { scale: 2, backgroundColor: "#1a0000", useCORS: true },
+      html2canvas: { scale: 2, backgroundColor: "#050816", useCORS: true },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     })
     .from(el)

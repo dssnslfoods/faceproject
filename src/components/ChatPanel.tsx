@@ -3,15 +3,15 @@ import { useAppStore } from "@/lib/store";
 import { askOracle } from "@/lib/gemini";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, MessageSquare } from "lucide-react";
 
 const SUGGESTED_QUESTIONS = [
-  "ปีนี้การงานเป็นอย่างไร",
-  "การเงินช่วงนี้ดีไหม",
-  "เนื้อคู่จะมาเมื่อไหร่",
-  "สุขภาพต้องระวังอะไร",
-  "เหมาะกับการลงทุนแบบใด",
-  "ควรเปลี่ยนงานหรือไม่",
+  "เหมาะกับ role ไหนมากที่สุด ทำไม?",
+  "ถ้าจะ promote เป็น team lead ต้อง develop อะไรเพิ่ม?",
+  "เสนอคำถามสัมภาษณ์เชิงพฤติกรรม 5 ข้อ",
+  "ถ้าผู้สมัครอยากเปลี่ยนสาย ควรไปทางไหน?",
+  "Onboarding plan 30/60/90 วัน",
+  "Course/Cert ที่ควร invest 6 เดือน",
 ];
 
 export function ChatPanel() {
@@ -39,8 +39,18 @@ export function ChatPanel() {
   };
 
   return (
-    <div className="border border-amber-500/30 rounded-xl bg-black/40 p-4 space-y-3">
-      <h3 className="font-serif text-amber-200 text-xl">ถามซินแส</h3>
+    <div className="glass-strong rounded-2xl p-5 space-y-4">
+      <div className="flex items-center gap-2">
+        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-500 to-electric flex items-center justify-center">
+          <MessageSquare className="h-4 w-4 text-slate-950" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-slate-100">HR Consultation</h3>
+          <p className="text-xs text-slate-400 font-mono uppercase tracking-wider">
+            Ask follow-up about this candidate
+          </p>
+        </div>
+      </div>
 
       {chatHistory.length === 0 && (
         <div className="flex flex-wrap gap-2">
@@ -48,7 +58,7 @@ export function ChatPanel() {
             <button
               key={q}
               onClick={() => send(q)}
-              className="text-sm px-3 py-1 rounded-full border border-amber-500/40 text-amber-200 hover:bg-amber-500/10"
+              className="text-xs px-3 py-1.5 rounded-full border border-slate-700 bg-slate-800/40 text-slate-300 hover:border-cyan-400/50 hover:bg-cyan-500/10 hover:text-cyan-200 transition-all font-th"
             >
               {q}
             </button>
@@ -60,19 +70,19 @@ export function ChatPanel() {
         {chatHistory.map((m, i) => (
           <div
             key={i}
-            className={`p-3 rounded-lg ${
+            className={`p-3 rounded-xl text-sm font-th leading-relaxed ${
               m.role === "user"
-                ? "bg-red-900/40 ml-12 text-amber-50"
-                : "bg-amber-950/40 mr-12 text-amber-100 font-serif whitespace-pre-wrap"
+                ? "bg-cyan-500/10 border border-cyan-400/20 ml-12 text-slate-100"
+                : "bg-slate-800/50 border border-slate-700/50 mr-12 text-slate-200 whitespace-pre-wrap"
             }`}
           >
             {m.content}
           </div>
         ))}
         {loading && (
-          <div className="flex items-center gap-2 text-amber-300">
+          <div className="flex items-center gap-2 text-cyan-300 text-sm font-mono">
             <Loader2 className="h-4 w-4 animate-spin" />
-            ซินแสกำลังพิจารณา...
+            ANALYZING...
           </div>
         )}
       </div>
@@ -82,10 +92,10 @@ export function ChatPanel() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send(input)}
-          placeholder="พิมพ์คำถาม..."
+          placeholder="ถามเกี่ยวกับ candidate นี้..."
           disabled={loading}
         />
-        <Button onClick={() => send(input)} disabled={loading || !input.trim()}>
+        <Button variant="primary" onClick={() => send(input)} disabled={loading || !input.trim()}>
           <Send className="h-4 w-4" />
         </Button>
       </div>

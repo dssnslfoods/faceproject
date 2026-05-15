@@ -26,7 +26,14 @@ export function Tabs({
 
 export function TabsList({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn("inline-flex flex-wrap gap-1 rounded-lg p-1", className)}>{children}</div>
+    <div
+      className={cn(
+        "inline-flex flex-wrap gap-1 rounded-xl p-1 glass",
+        className
+      )}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -45,8 +52,10 @@ export function TabsTrigger({
     <button
       onClick={() => ctx.setValue(value)}
       className={cn(
-        "px-3 py-1.5 text-sm rounded-md transition-colors font-medium",
-        active ? "bg-amber-600 text-amber-50" : "text-amber-200 hover:bg-amber-500/10",
+        "px-4 py-2 text-sm rounded-lg transition-all font-medium font-th",
+        active
+          ? "bg-gradient-to-r from-cyan-500/20 to-electric/20 text-cyan-300 shadow-glow border border-cyan-400/40"
+          : "text-slate-400 hover:bg-slate-800/40 hover:text-slate-200",
         className
       )}
     >
@@ -66,5 +75,5 @@ export function TabsContent({
 }) {
   const ctx = React.useContext(TabsContext)!;
   if (ctx.value !== value) return null;
-  return <div className={className}>{children}</div>;
+  return <div className={cn("animate-fade-in", className)}>{children}</div>;
 }

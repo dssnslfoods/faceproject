@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-type Variant = "default" | "outline" | "ghost";
+type Variant = "default" | "outline" | "ghost" | "primary";
 type Size = "default" | "sm" | "lg" | "icon";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -10,9 +10,12 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variants: Record<Variant, string> = {
-  default: "bg-amber-600 hover:bg-amber-700 text-amber-50",
-  outline: "border border-amber-500/50 bg-transparent hover:bg-amber-500/10 text-amber-200",
-  ghost: "bg-transparent hover:bg-amber-500/10 text-amber-200",
+  primary:
+    "bg-gradient-to-r from-cyan-500 to-electric text-slate-950 hover:shadow-glow font-semibold",
+  default: "bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700",
+  outline:
+    "border border-cyan-500/40 bg-cyan-500/5 hover:bg-cyan-500/15 text-cyan-300 hover:border-cyan-400",
+  ghost: "bg-transparent hover:bg-slate-800/60 text-slate-300",
 };
 
 const sizes: Record<Size, string> = {
@@ -27,8 +30,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center rounded-md font-medium transition-colors",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400",
+        "inline-flex items-center justify-center rounded-lg font-medium transition-all",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400",
         "disabled:opacity-50 disabled:pointer-events-none",
         variants[variant],
         sizes[size],

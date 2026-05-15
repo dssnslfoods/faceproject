@@ -1,35 +1,46 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { Palace } from "@/types/face-reading";
+// Generic ScoreCard — used for personality traits and role matches
+import { cn } from "@/lib/utils";
 
-export function PalaceCard({ palace }: { palace: Palace }) {
-  const score = Math.max(0, Math.min(10, palace.score));
-  const scoreColor =
-    score >= 8 ? "text-emerald-300" : score >= 5 ? "text-amber-300" : "text-rose-300";
+interface Props {
+  title: string;
+  subtitle?: string;
+  score: number; // 0-100
+  description: string;
+  accent?: "cyan" | "purple" | "emerald" | "amber";
+}
+
+export function ScoreCard({ title, subtitle, score, description, accent = "cyan" }: Props) {
+  const clamped = Math.max(0, Math.min(100, score));
+  const tone =
+    accent === "cyan"
+      ? { text: "text-cyan-300", bar: "from-cyan-500 to-electric", border: "border-cyan-400/30" }
+      : accent === "purple"
+        ? { text: "text-purple-300", bar: "from-purple-500 to-pink-500", border: "border-purple-400/30" }
+        : accent === "emerald"
+          ? { text: "text-emerald-300", bar: "from-emerald-500 to-cyan-500", border: "border-emerald-400/30" }
+          : { text: "text-amber-300", bar: "from-amber-500 to-rose-500", border: "border-amber-400/30" };
 
   return (
-    <Card className="bg-gradient-to-br from-red-950/40 to-black border-amber-500/30 hover:border-amber-400/60 transition-colors">
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <CardTitle className="font-serif text-amber-200 text-lg">
-              {palace.id}. {palace.name}
-            </CardTitle>
-            <p className="text-amber-100/60 text-xs mt-0.5">
-              {palace.nameChinese} · {palace.location}
-            </p>
-          </div>
-          <div className={`font-serif text-2xl ${scoreColor}`}>{score}</div>
+    <div className={cn("glass rounded-xl p-4 border hover:border-opacity-60 transition-all", tone.border)}>
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <div>
+          <div className="font-semibold text-slate-100 font-th">{title}</div>
+          {subtitle && <div className="text-xs text-slate-400 mt-0.5 font-mono">{subtitle}</div>}
         </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-amber-50/85 text-sm leading-relaxed">{palace.reading}</p>
-        <div className="mt-3 h-1.5 w-full rounded-full bg-black/50 overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-amber-600 to-amber-300"
-            style={{ width: `${score * 10}%` }}
-          />
+        <div className={cn("text-2xl font-bold font-mono tabular-nums", tone.text)}>
+          {clamped}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      <div className="h-1.5 w-full rounded-full bg-slate-800/60 overflow-hidden mb-3">
+        <div
+          className={cn("h-full bg-gradient-to-r transition-all duration-700", tone.bar)}
+          style={{ width: `${clamped}%` }}
+        />
+      </div>
+      <p className="text-sm text-slate-300 leading-relaxed font-th">{description}</p>
+    </div>
   );
 }
+
+// Backward-compat export — kept for any old imports
+export const PalaceCard = ScoreCard;

@@ -88,14 +88,14 @@ export function FaceLandmarkOverlay({ webcamRef, mirrored = true, onFaceDetected
         className="absolute inset-0 w-full h-full pointer-events-none"
         style={{ transform: mirrored ? "scaleX(-1)" : undefined }}
       />
-      <div className="absolute top-2 left-2 flex items-center gap-2 text-xs px-2 py-1 rounded-full bg-black/60 border border-amber-500/40">
+      <div className="absolute top-3 left-3 flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg glass border border-cyan-400/30 font-mono">
         <span
           className={`inline-block w-2 h-2 rounded-full ${
-            !ready ? "bg-amber-400 animate-pulse" : faceDetected ? "bg-emerald-400" : "bg-rose-400"
+            !ready ? "bg-amber-400 animate-pulse" : faceDetected ? "bg-emerald-400 pulse-glow" : "bg-rose-400"
           }`}
         />
-        <span className="text-amber-100/80">
-          {!ready ? "กำลังโหลด AI..." : faceDetected ? "ตรวจพบใบหน้า" : "ไม่พบใบหน้า"}
+        <span className="text-slate-200 uppercase tracking-wider">
+          {!ready ? "INIT AI" : faceDetected ? "FACE LOCKED" : "SCANNING"}
         </span>
       </div>
     </>
@@ -111,74 +111,66 @@ function drawFace(
 ) {
   const toPt = (i: number): Pt => ({ x: landmarks[i].x * w, y: landmarks[i].y * h });
 
-  // Glow shadow for cyberpunk feel
-  ctx.shadowColor = "#d4af37";
-  ctx.shadowBlur = 6;
+  ctx.shadowColor = "#00e5ff";
+  ctx.shadowBlur = 8;
 
-  // Face oval — outer boundary
   drawPolyline(ctx, FACE_REGIONS.faceOval.map(toPt), {
-    color: "rgba(212, 175, 55, 0.85)",
-    width: 2,
+    color: "rgba(0, 229, 255, 0.85)",
+    width: 1.8,
     closed: true,
   });
 
-  // Eyebrows
   drawPolyline(ctx, FACE_REGIONS.leftEyebrow.map(toPt), {
-    color: "rgba(255, 215, 0, 0.95)",
-    width: 2,
+    color: "rgba(0, 229, 255, 0.95)",
+    width: 1.8,
   });
   drawPolyline(ctx, FACE_REGIONS.rightEyebrow.map(toPt), {
-    color: "rgba(255, 215, 0, 0.95)",
-    width: 2,
+    color: "rgba(0, 229, 255, 0.95)",
+    width: 1.8,
   });
 
-  // Eyes
   drawPolyline(ctx, FACE_REGIONS.leftEye.map(toPt), {
-    color: "rgba(255, 240, 150, 1)",
-    width: 1.8,
+    color: "rgba(168, 247, 255, 1)",
+    width: 1.6,
     closed: true,
   });
   drawPolyline(ctx, FACE_REGIONS.rightEye.map(toPt), {
-    color: "rgba(255, 240, 150, 1)",
-    width: 1.8,
+    color: "rgba(168, 247, 255, 1)",
+    width: 1.6,
     closed: true,
   });
 
-  // Nose bridge
   drawPolyline(ctx, FACE_REGIONS.noseBridge.map(toPt), {
-    color: "rgba(255, 200, 100, 0.9)",
-    width: 1.8,
+    color: "rgba(125, 154, 255, 0.9)",
+    width: 1.6,
   });
 
-  // Lips
   drawPolyline(ctx, FACE_REGIONS.outerLips.map(toPt), {
-    color: "rgba(255, 120, 120, 0.95)",
-    width: 1.8,
+    color: "rgba(168, 85, 247, 0.95)",
+    width: 1.6,
     closed: true,
   });
   drawPolyline(ctx, FACE_REGIONS.innerLips.map(toPt), {
-    color: "rgba(255, 80, 80, 0.7)",
+    color: "rgba(168, 85, 247, 0.7)",
     width: 1.2,
     closed: true,
   });
 
-  // Sparse mesh dots — every 8th landmark
   ctx.shadowBlur = 3;
-  ctx.fillStyle = "rgba(212, 175, 55, 0.45)";
+  ctx.fillStyle = "rgba(0, 229, 255, 0.45)";
   for (let i = 0; i < landmarks.length; i += 8) {
     const p = toPt(i);
     ctx.beginPath();
-    ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+    ctx.arc(p.x, p.y, 1.1, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  // Labels — top of each region (after mirroring is undone via canvas transform)
   ctx.shadowBlur = 0;
-  drawLabel(ctx, toPt(10), "หน้าผาก (天庭)", w);
-  drawLabel(ctx, toPt(1), "จมูก (財帛)", w);
-  drawLabel(ctx, toPt(13), "ปาก (水星)", w);
-  drawLabel(ctx, toPt(33), "ตา (奸門)", w, true);
-  drawLabel(ctx, toPt(263), "ตา (妻妾)", w);
+  drawLabel(ctx, toPt(10), "FOREHEAD", w);
+  drawLabel(ctx, toPt(1), "NOSE", w);
+  drawLabel(ctx, toPt(13), "MOUTH", w);
+  drawLabel(ctx, toPt(33), "L · EYE", w, true);
+  drawLabel(ctx, toPt(263), "R · EYE", w);
 }
 
 function drawPolyline(
@@ -211,23 +203,23 @@ function drawLabel(
   ctx.scale(-1, 1);
   const x = canvasW - anchor.x;
   const y = anchor.y;
-  ctx.font = "600 13px 'Sarabun', sans-serif";
+  ctx.font = "600 11px 'JetBrains Mono', ui-monospace, monospace";
   ctx.textBaseline = "middle";
   const metrics = ctx.measureText(text);
   const padX = 6;
-  const padY = 3;
+  const _padY = 3; void _padY;
   const boxW = metrics.width + padX * 2;
   const boxH = 18;
   const bx = leftSide ? x - boxW - 8 : x + 8;
   const by = y - boxH / 2;
-  ctx.fillStyle = "rgba(0,0,0,0.65)";
-  ctx.strokeStyle = "rgba(212,175,55,0.7)";
+  ctx.fillStyle = "rgba(5, 8, 22, 0.75)";
+  ctx.strokeStyle = "rgba(0, 229, 255, 0.7)";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.roundRect(bx, by, boxW, boxH, 4);
   ctx.fill();
   ctx.stroke();
-  ctx.fillStyle = "rgba(255, 230, 150, 0.95)";
+  ctx.fillStyle = "rgba(168, 247, 255, 0.95)";
   ctx.fillText(text, bx + padX, y);
   ctx.restore();
 }

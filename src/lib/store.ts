@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { FaceReading, ChatMessage } from "@/types/face-reading";
+import type { HRReport, ChatMessage } from "@/types/hr-report";
 
 type Stage = "intro" | "capture" | "consent" | "loading" | "result";
 
@@ -13,7 +13,7 @@ export interface RecognizedPerson {
 interface AppState {
   stage: Stage;
   capturedImage: string | null;
-  reading: FaceReading | null;
+  reading: HRReport | null;
   chatHistory: ChatMessage[];
   error: string | null;
   person: RecognizedPerson | null;
@@ -21,7 +21,7 @@ interface AppState {
 
   setStage: (s: Stage) => void;
   setImage: (img: string | null) => void;
-  setReading: (r: FaceReading | null) => void;
+  setReading: (r: HRReport | null) => void;
   addMessage: (m: ChatMessage) => void;
   setError: (e: string | null) => void;
   setPerson: (p: RecognizedPerson | null) => void;

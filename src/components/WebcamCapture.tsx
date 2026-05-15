@@ -117,7 +117,7 @@ export function WebcamCapture() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="relative rounded-2xl overflow-hidden border-2 border-amber-500/40 shadow-[0_0_40px_rgba(212,175,55,0.2)] bg-black w-full max-w-2xl aspect-video">
+      <div className="relative rounded-2xl overflow-hidden border border-cyan-400/40 shadow-glow bg-slate-950 w-full max-w-3xl aspect-video ring-gradient">
         {previewSrc ? (
           <img src={previewSrc} alt="capture preview" className="w-full h-full object-cover" />
         ) : (
@@ -142,36 +142,36 @@ export function WebcamCapture() {
 
             {/* Floating recognition badge */}
             {recognized && (
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 animate-in fade-in slide-in-from-top-4 duration-500">
-                <div className="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-600/95 to-amber-700/95 border-2 border-amber-300 shadow-[0_0_30px_rgba(212,175,55,0.6)] flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-amber-100" />
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 animate-fade-in">
+                <div className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500/90 to-electric/90 border border-cyan-300/60 shadow-glow-lg flex items-center gap-3">
+                  <Sparkles className="h-5 w-5 text-slate-950" />
                   <div className="text-left">
-                    <p className="font-serif text-amber-50 text-base leading-tight">
-                      สวัสดี คุณ <strong>{recognized.name}</strong>
+                    <p className="text-slate-950 text-base leading-tight font-semibold font-th">
+                      Welcome back, <strong>{recognized.name}</strong>
                     </p>
-                    <p className="text-xs text-amber-100/80 leading-tight">
-                      เคยพิจารณาแล้ว {recognized.visit_count} ครั้ง · {Math.round(recognized.similarity * 100)}% match
+                    <p className="text-xs text-slate-900/70 leading-tight font-mono">
+                      VISIT #{recognized.visit_count} · {Math.round(recognized.similarity * 100)}% MATCH
                     </p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Scanning indicator (only when actively scanning + not yet matched) */}
+            {/* Scanning indicator */}
             {scanning && !recognized && faceDetected && (
-              <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-black/70 border border-amber-500/40 flex items-center gap-2 text-xs text-amber-200">
+              <div className="absolute top-3 right-3 px-3 py-1.5 rounded-lg glass border border-cyan-400/40 flex items-center gap-2 text-xs text-cyan-200 font-mono uppercase tracking-wider">
                 <ScanFace className="h-3.5 w-3.5 animate-pulse" />
-                กำลังจดจำใบหน้า...
+                Matching biometric...
               </div>
             )}
           </>
         )}
       </div>
 
-      {camError && <p className="text-red-300 text-sm">{camError}</p>}
+      {camError && <p className="text-rose-300 text-sm">{camError}</p>}
 
-      <p className="text-amber-100/80 text-sm text-center max-w-md">
-        จัดใบหน้าให้อยู่กลางกรอบ • แสงสว่างเพียงพอ • ไม่ใส่แว่นกันแดด • ผมเปิดหน้าผาก
+      <p className="text-slate-400 text-sm text-center max-w-md font-th">
+        จัดใบหน้าให้อยู่กลางกรอบ · แสงสว่างเพียงพอ · ไม่ใส่แว่นกันแดด · มองตรงเข้ากล้อง
       </p>
 
       <div className="flex flex-wrap gap-3 justify-center">
@@ -181,15 +181,16 @@ export function WebcamCapture() {
               <RotateCcw className="mr-2 h-4 w-4" />
               ถ่ายใหม่
             </Button>
-            <Button onClick={confirm} className="bg-amber-600 hover:bg-amber-700">
-              พิจารณาโหงวเฮ้ง
+            <Button onClick={confirm} variant="primary" size="lg">
+              <Sparkles className="mr-2 h-4 w-4" />
+              วิเคราะห์ผู้สมัคร
             </Button>
           </>
         ) : (
           <>
-            <Button onClick={capture} size="lg" className="bg-red-700 hover:bg-red-800">
+            <Button onClick={capture} size="lg" variant="primary">
               <Camera className="mr-2 h-5 w-5" />
-              ถ่ายภาพ
+              Capture
             </Button>
             <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
               <Upload className="mr-2 h-4 w-4" />
