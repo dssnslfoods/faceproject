@@ -6,11 +6,12 @@ import type { NormalizedLandmark } from "@mediapipe/tasks-vision";
 interface Props {
   webcamRef: React.RefObject<Webcam | null>;
   mirrored?: boolean;
+  onFaceDetectedChange?: (detected: boolean) => void;
 }
 
 type Pt = { x: number; y: number };
 
-export function FaceLandmarkOverlay({ webcamRef, mirrored = true }: Props) {
+export function FaceLandmarkOverlay({ webcamRef, mirrored = true, onFaceDetectedChange }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number>(-1);
@@ -44,10 +45,16 @@ export function FaceLandmarkOverlay({ webcamRef, mirrored = true }: Props) {
           ctx.clearRect(0, 0, w, h);
 
           if (result.faceLandmarks && result.faceLandmarks.length > 0) {
-            setFaceDetected(true);
+            setFaceDetected((prev) => {
+              if (!prev) onFaceDetectedChange?.(true);
+              return true;
+            });
             drawFace(ctx, result.faceLandmarks[0], w, h, mirrored);
           } else {
-            setFaceDetected(false);
+            setFaceDetected((prev) => {
+              if (prev) onFaceDetectedChange?.(false);
+              return false;
+            });
           }
         } catch (err) {
           // ignore transient detect errors

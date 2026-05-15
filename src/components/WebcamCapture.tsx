@@ -1,12 +1,13 @@
 import { useRef, useCallback, useState } from "react";
 import Webcam from "react-webcam";
 import { Button } from "@/components/ui/button";
-import { Camera, RotateCcw, Upload } from "lucide-react";
+import { Camera, RotateCcw, Upload, Sparkles, ScanFace } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { analyzeFace } from "@/lib/gemini";
 import { FaceLandmarkOverlay } from "./FaceLandmarkOverlay";
 import { computeDescriptorFromDataUrl } from "@/lib/face-embed";
-import { recognizeFace, touchPerson, supabaseEnabled } from "@/lib/supabase";
+import { recognizeFace, touchPerson, supabaseEnabled, type MatchedPerson } from "@/lib/supabase";
+import { useLiveRecognition } from "@/lib/use-live-recognition";
 
 const videoConstraints = {
   width: 1280,
@@ -19,8 +20,23 @@ export function WebcamCapture() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [camError, setCamError] = useState<string | null>(null);
+  const [faceDetected, setFaceDetected] = useState(false);
   const { setStage, setImage, setReading, setError, setPerson, setPendingEmbedding } =
     useAppStore();
+
+  // Live recognition while in preview (not after capture)
+  const { recognized, scanning, embedding } = useLiveRecognition(
+    webcamRef,
+    faceDetected,
+    !previewSrc
+  );
+
+  // Cache last live result so we don't double-query on confirm
+  const cachedRef = useRef<{ match: MatchedPerson | null; embedding: number[] | null }>({
+    match: null,
+    embedding: null,
+  });
+  cachedRef.current = { match: recognized, embedding };
 
   const capture = useCallback(() => {
     const src = webcamRef.current?.getScreenshot({ width: 1280, height: 720 });
@@ -45,7 +61,6 @@ export function WebcamCapture() {
     setImage(previewSrc);
     setError(null);
 
-    // If Supabase not configured → skip recognition flow entirely
     if (!supabaseEnabled) {
       setStage("loading");
       try {
@@ -59,20 +74,25 @@ export function WebcamCapture() {
       return;
     }
 
-    // Recognition flow
     setStage("loading");
     try {
-      const embedding = await computeDescriptorFromDataUrl(previewSrc);
-      if (!embedding) {
+      // Reuse cached match from live recognition if available
+      let matched = cachedRef.current.match;
+      let desc = cachedRef.current.embedding;
+
+      if (!desc) {
+        desc = await computeDescriptorFromDataUrl(previewSrc);
+      }
+      if (!desc) {
         setError("ตรวจไม่พบใบหน้าในภาพ ลองถ่ายใหม่อีกครั้ง");
         setStage("capture");
         return;
       }
-
-      const matched = await recognizeFace(embedding);
+      if (!matched) {
+        matched = await recognizeFace(desc);
+      }
 
       if (matched) {
-        // Returning user → greet, touch, analyze
         await touchPerson(matched.id);
         setPerson({
           id: matched.id,
@@ -84,8 +104,7 @@ export function WebcamCapture() {
         setReading(reading);
         setStage("result");
       } else {
-        // New face → ask for consent + name
-        setPendingEmbedding(embedding);
+        setPendingEmbedding(desc);
         setStage("consent");
       }
     } catch (e: any) {
@@ -115,7 +134,36 @@ export function WebcamCapture() {
               }
               className="w-full h-full object-cover"
             />
-            <FaceLandmarkOverlay webcamRef={webcamRef} mirrored />
+            <FaceLandmarkOverlay
+              webcamRef={webcamRef}
+              mirrored
+              onFaceDetectedChange={setFaceDetected}
+            />
+
+            {/* Floating recognition badge */}
+            {recognized && (
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div className="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-600/95 to-amber-700/95 border-2 border-amber-300 shadow-[0_0_30px_rgba(212,175,55,0.6)] flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-amber-100" />
+                  <div className="text-left">
+                    <p className="font-serif text-amber-50 text-base leading-tight">
+                      สวัสดี คุณ <strong>{recognized.name}</strong>
+                    </p>
+                    <p className="text-xs text-amber-100/80 leading-tight">
+                      เคยพิจารณาแล้ว {recognized.visit_count} ครั้ง · {Math.round(recognized.similarity * 100)}% match
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Scanning indicator (only when actively scanning + not yet matched) */}
+            {scanning && !recognized && faceDetected && (
+              <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-black/70 border border-amber-500/40 flex items-center gap-2 text-xs text-amber-200">
+                <ScanFace className="h-3.5 w-3.5 animate-pulse" />
+                กำลังจดจำใบหน้า...
+              </div>
+            )}
           </>
         )}
       </div>
