@@ -5,10 +5,25 @@ import { FaceAnalysisResult } from "@/components/FaceAnalysisResult";
 import { ConsentDialog } from "@/components/ConsentDialog";
 import { Disclaimer } from "@/components/Disclaimer";
 import { Button } from "@/components/ui/button";
-import { X, Brain, Sparkles, ScanFace, BarChart3 } from "lucide-react";
+import { X, Brain, Sparkles, ScanFace, BarChart3, RefreshCw } from "lucide-react";
+import { analyzeFace } from "@/lib/gemini";
 
 export default function App() {
-  const { stage, setStage, error, setError } = useAppStore();
+  const { stage, setStage, error, setError, capturedImage, setReading } = useAppStore();
+
+  const retry = async () => {
+    if (!capturedImage) return;
+    setError(null);
+    setStage("loading");
+    try {
+      const report = await analyzeFace(capturedImage);
+      setReading(report);
+      setStage("result");
+    } catch (e: any) {
+      setError(e.message || "วิเคราะห์ไม่สำเร็จ");
+      setStage("capture");
+    }
+  };
 
   return (
     <div className="min-h-screen text-slate-100 bg-grid">
@@ -44,11 +59,24 @@ export default function App() {
 
       <main className="container mx-auto px-4 py-8 md:py-12">
         {error && (
-          <div className="glass-strong border-rose-500/40 bg-rose-950/30 text-rose-100 p-3 rounded-xl mb-6 max-w-2xl mx-auto flex items-start justify-between gap-3 animate-fade-in">
-            <span className="text-sm">{error}</span>
-            <button onClick={() => setError(null)} className="text-rose-200 hover:text-white">
-              <X className="h-4 w-4" />
-            </button>
+          <div className="glass-strong border border-rose-500/40 bg-rose-950/30 text-rose-100 p-4 rounded-xl mb-6 max-w-2xl mx-auto animate-fade-in">
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-sm leading-relaxed font-th">{error}</p>
+              <button onClick={() => setError(null)} className="text-rose-200 hover:text-white shrink-0">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            {capturedImage && stage === "capture" && (
+              <div className="flex gap-2 mt-3 pt-3 border-t border-rose-500/20">
+                <Button size="sm" variant="primary" onClick={retry}>
+                  <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+                  ลองวิเคราะห์อีกครั้ง
+                </Button>
+                <span className="text-xs text-rose-200/60 self-center font-th">
+                  ระบบจะเปลี่ยน model อัตโนมัติถ้า server หลักล่ม
+                </span>
+              </div>
+            )}
           </div>
         )}
 
