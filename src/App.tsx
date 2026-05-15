@@ -2,6 +2,7 @@ import { useAppStore } from "@/lib/store";
 import { WebcamCapture } from "@/components/WebcamCapture";
 import { LoadingOracle } from "@/components/LoadingOracle";
 import { FaceAnalysisResult } from "@/components/FaceAnalysisResult";
+import { ConsentDialog } from "@/components/ConsentDialog";
 import { Disclaimer } from "@/components/Disclaimer";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -49,6 +50,7 @@ export default function App() {
         )}
 
         {stage === "capture" && <WebcamCapture />}
+        {stage === "consent" && <ConsentDialog />}
         {stage === "loading" && <LoadingOracle />}
         {stage === "result" && <FaceAnalysisResult />}
       </main>

@@ -5,6 +5,8 @@ import { Camera, RotateCcw, Upload } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { analyzeFace } from "@/lib/gemini";
 import { FaceLandmarkOverlay } from "./FaceLandmarkOverlay";
+import { computeDescriptorFromDataUrl } from "@/lib/face-embed";
+import { recognizeFace, touchPerson, supabaseEnabled } from "@/lib/supabase";
 
 const videoConstraints = {
   width: 1280,
@@ -17,7 +19,8 @@ export function WebcamCapture() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [camError, setCamError] = useState<string | null>(null);
-  const { setStage, setImage, setReading, setError } = useAppStore();
+  const { setStage, setImage, setReading, setError, setPerson, setPendingEmbedding } =
+    useAppStore();
 
   const capture = useCallback(() => {
     const src = webcamRef.current?.getScreenshot({ width: 1280, height: 720 });
@@ -40,14 +43,53 @@ export function WebcamCapture() {
   const confirm = async () => {
     if (!previewSrc) return;
     setImage(previewSrc);
-    setStage("loading");
     setError(null);
+
+    // If Supabase not configured → skip recognition flow entirely
+    if (!supabaseEnabled) {
+      setStage("loading");
+      try {
+        const reading = await analyzeFace(previewSrc);
+        setReading(reading);
+        setStage("result");
+      } catch (e: any) {
+        setError(e.message || "วิเคราะห์ไม่สำเร็จ");
+        setStage("capture");
+      }
+      return;
+    }
+
+    // Recognition flow
+    setStage("loading");
     try {
-      const reading = await analyzeFace(previewSrc);
-      setReading(reading);
-      setStage("result");
+      const embedding = await computeDescriptorFromDataUrl(previewSrc);
+      if (!embedding) {
+        setError("ตรวจไม่พบใบหน้าในภาพ ลองถ่ายใหม่อีกครั้ง");
+        setStage("capture");
+        return;
+      }
+
+      const matched = await recognizeFace(embedding);
+
+      if (matched) {
+        // Returning user → greet, touch, analyze
+        await touchPerson(matched.id);
+        setPerson({
+          id: matched.id,
+          name: matched.name,
+          visitCount: matched.visit_count + 1,
+          isReturning: true,
+        });
+        const reading = await analyzeFace(previewSrc);
+        setReading(reading);
+        setStage("result");
+      } else {
+        // New face → ask for consent + name
+        setPendingEmbedding(embedding);
+        setStage("consent");
+      }
     } catch (e: any) {
-      setError(e.message || "วิเคราะห์ไม่สำเร็จ");
+      setError(e.message || "เกิดข้อผิดพลาด");
       setStage("capture");
     }
   };

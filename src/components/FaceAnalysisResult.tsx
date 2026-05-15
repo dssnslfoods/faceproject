@@ -6,14 +6,48 @@ import { PalaceCard } from "./PalaceCard";
 import { ChatPanel } from "./ChatPanel";
 import { exportToPdf } from "@/lib/pdf-export";
 import { Button } from "@/components/ui/button";
-import { Download, RotateCcw } from "lucide-react";
+import { Download, RotateCcw, Trash2 } from "lucide-react";
+import { deletePerson } from "@/lib/supabase";
 
 export function FaceAnalysisResult() {
-  const { reading, capturedImage, reset } = useAppStore();
+  const { reading, capturedImage, reset, person, setPerson } = useAppStore();
   if (!reading) return null;
+
+  const onDeleteMe = async () => {
+    if (!person) return;
+    if (!confirm(`ลบข้อมูลใบหน้าและชื่อ "${person.name}" ออกจากระบบถาวร?`)) return;
+    try {
+      await deletePerson(person.id);
+      setPerson(null);
+      alert("ลบข้อมูลของคุณเรียบร้อยแล้ว");
+    } catch (e: any) {
+      alert("ลบไม่สำเร็จ: " + e.message);
+    }
+  };
 
   return (
     <div id="result-root" className="max-w-5xl mx-auto p-2 md:p-4 space-y-6">
+      {person && (
+        <div
+          className={`text-center p-4 rounded-xl border ${
+            person.isReturning
+              ? "border-emerald-500/40 bg-emerald-950/20"
+              : "border-amber-500/40 bg-amber-950/20"
+          }`}
+        >
+          <p className="font-serif text-xl md:text-2xl text-amber-200">
+            {person.isReturning
+              ? `ยินดีต้อนรับกลับ คุณ ${person.name} 🙏`
+              : `ยินดีที่ได้รู้จัก คุณ ${person.name} ✨`}
+          </p>
+          {person.isReturning && (
+            <p className="text-sm text-emerald-200/70 mt-1">
+              นี่คือครั้งที่ {person.visitCount} ที่พิจารณาโหงวเฮ้ง
+            </p>
+          )}
+        </div>
+      )}
+
       <Card className="bg-gradient-to-br from-red-950/60 to-black border-amber-500/40">
         <CardHeader>
           <div className="flex flex-col md:flex-row gap-4 items-start">
@@ -161,6 +195,16 @@ export function FaceAnalysisResult() {
           <RotateCcw className="mr-2 h-4 w-4" />
           ดูใหม่
         </Button>
+        {person && (
+          <Button
+            variant="ghost"
+            onClick={onDeleteMe}
+            className="text-rose-300 hover:bg-rose-500/10"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            ลบข้อมูลผม
+          </Button>
+        )}
       </div>
     </div>
   );
