@@ -39,7 +39,7 @@ export function ChatPanel() {
   };
 
   return (
-    <div className="glass-strong rounded-2xl p-5 space-y-4">
+    <div className="glass-strong rounded-2xl p-4 md:p-5 space-y-4">
       <div className="flex items-center gap-2">
         <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-500 to-electric flex items-center justify-center">
           <MessageSquare className="h-4 w-4 text-slate-950" />
@@ -72,8 +72,8 @@ export function ChatPanel() {
             key={i}
             className={`p-3 rounded-xl text-sm font-th leading-relaxed ${
               m.role === "user"
-                ? "bg-cyan-500/10 border border-cyan-400/20 ml-12 text-slate-100"
-                : "bg-slate-800/50 border border-slate-700/50 mr-12 text-slate-200 whitespace-pre-wrap"
+                ? "bg-cyan-500/10 border border-cyan-400/20 ml-4 sm:ml-12 text-slate-100"
+                : "bg-slate-800/50 border border-slate-700/50 mr-4 sm:mr-12 text-slate-200 whitespace-pre-wrap"
             }`}
           >
             {m.content}

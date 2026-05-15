@@ -123,9 +123,9 @@ export function LoadingOracle() {
   const method = METHODOLOGIES[methodIdx];
 
   return (
-    <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_400px] gap-6 items-start animate-fade-in">
+    <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_400px] gap-4 md:gap-6 items-start animate-fade-in">
       {/* Left: face with scan overlays */}
-      <div className="relative w-full aspect-square md:aspect-[4/3] rounded-3xl overflow-hidden glass-strong">
+      <div className="relative w-full aspect-[3/4] sm:aspect-square md:aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden glass-strong">
         {capturedImage ? (
           <img
             src={capturedImage}
@@ -234,15 +234,16 @@ export function LoadingOracle() {
       </div>
 
       {/* Right: methodology rotating cards */}
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         <div className="text-center lg:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-xs text-cyan-300 font-mono uppercase tracking-wider mb-3">
-            <Database className="h-3 w-3" /> Powered by 6 established frameworks
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-[10px] md:text-xs text-cyan-300 font-mono uppercase tracking-wider mb-2 md:mb-3">
+            <Database className="h-3 w-3" />
+            <span className="hidden sm:inline">Powered by</span> 6 frameworks
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-cyan-400 via-electric to-purple-400 bg-clip-text text-transparent">
+          <h2 className="text-xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-cyan-400 via-electric to-purple-400 bg-clip-text text-transparent">
             หลักการวิเคราะห์
           </h2>
-          <p className="text-sm text-slate-400 mt-2 font-th">
+          <p className="text-xs md:text-sm text-slate-400 mt-1 md:mt-2 font-th px-2 lg:px-0">
             ระบบใช้กรอบทฤษฎีและงานวิจัยที่ได้รับการยอมรับเพื่อให้ผลลัพธ์น่าเชื่อถือ
           </p>
         </div>

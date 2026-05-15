@@ -117,7 +117,7 @@ export function WebcamCapture() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="relative rounded-2xl overflow-hidden border border-cyan-400/40 shadow-glow bg-slate-950 w-full max-w-3xl aspect-video ring-gradient">
+      <div className="relative rounded-2xl overflow-hidden border border-cyan-400/40 shadow-glow bg-slate-950 w-full max-w-3xl aspect-[3/4] sm:aspect-video ring-gradient">
         {previewSrc ? (
           <img src={previewSrc} alt="capture preview" className="w-full h-full object-cover" />
         ) : (
@@ -142,14 +142,14 @@ export function WebcamCapture() {
 
             {/* Floating recognition badge */}
             {recognized && (
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 animate-fade-in">
-                <div className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500/90 to-electric/90 border border-cyan-300/60 shadow-glow-lg flex items-center gap-3">
-                  <Sparkles className="h-5 w-5 text-slate-950" />
-                  <div className="text-left">
-                    <p className="text-slate-950 text-base leading-tight font-semibold font-th">
+              <div className="absolute top-14 sm:top-4 left-1/2 -translate-x-1/2 animate-fade-in w-[calc(100%-1.5rem)] max-w-xs sm:max-w-none sm:w-auto">
+                <div className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-cyan-500/95 to-electric/95 border border-cyan-300/60 shadow-glow-lg flex items-center gap-2 sm:gap-3">
+                  <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-slate-950 shrink-0" />
+                  <div className="text-left min-w-0">
+                    <p className="text-slate-950 text-sm sm:text-base leading-tight font-semibold font-th truncate">
                       Welcome back, <strong>{recognized.name}</strong>
                     </p>
-                    <p className="text-xs text-slate-900/70 leading-tight font-mono">
+                    <p className="text-[10px] sm:text-xs text-slate-900/70 leading-tight font-mono">
                       VISIT #{recognized.visit_count} · {Math.round(recognized.similarity * 100)}% MATCH
                     </p>
                   </div>
@@ -174,25 +174,25 @@ export function WebcamCapture() {
         จัดใบหน้าให้อยู่กลางกรอบ · แสงสว่างเพียงพอ · ไม่ใส่แว่นกันแดด · มองตรงเข้ากล้อง
       </p>
 
-      <div className="flex flex-wrap gap-3 justify-center">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 justify-center w-full sm:w-auto px-2 sm:px-0">
         {previewSrc ? (
           <>
-            <Button variant="outline" onClick={retake}>
+            <Button variant="outline" onClick={retake} className="w-full sm:w-auto order-2 sm:order-1">
               <RotateCcw className="mr-2 h-4 w-4" />
               ถ่ายใหม่
             </Button>
-            <Button onClick={confirm} variant="primary" size="lg">
+            <Button onClick={confirm} variant="primary" size="lg" className="w-full sm:w-auto order-1 sm:order-2">
               <Sparkles className="mr-2 h-4 w-4" />
               วิเคราะห์ผู้สมัคร
             </Button>
           </>
         ) : (
           <>
-            <Button onClick={capture} size="lg" variant="primary">
+            <Button onClick={capture} size="lg" variant="primary" className="w-full sm:w-auto">
               <Camera className="mr-2 h-5 w-5" />
               Capture
             </Button>
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full sm:w-auto">
               <Upload className="mr-2 h-4 w-4" />
               อัพโหลดรูป
             </Button>

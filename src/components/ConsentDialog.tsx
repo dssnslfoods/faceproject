@@ -132,14 +132,15 @@ export function ConsentDialog() {
             </span>
           </label>
 
-          <div className="flex flex-wrap gap-2 justify-end pt-2">
-            <Button variant="ghost" onClick={skip} disabled={submitting}>
+          <div className="flex flex-col sm:flex-row gap-2 justify-end pt-2">
+            <Button variant="ghost" onClick={skip} disabled={submitting} className="w-full sm:w-auto order-2 sm:order-1">
               ข้าม (ไม่บันทึก)
             </Button>
             <Button
               variant="primary"
               onClick={submit}
               disabled={!name.trim() || !consent || submitting}
+              className="w-full sm:w-auto order-1 sm:order-2"
             >
               <AlertTriangle className="mr-2 h-4 w-4" />
               {submitting ? "Saving..." : "ยินยอม + เริ่มวิเคราะห์"}

@@ -16,11 +16,25 @@ html, body, #root {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  min-height: 100svh;
   background: var(--bg-1);
   color: var(--text);
   font-family: 'Inter', 'Sarabun', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+/* iOS safe area insets */
+.safe-px { padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+.safe-pb { padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); }
+.safe-pt { padding-top: max(0.5rem, env(safe-area-inset-top)); }
+
+/* Disable hover effects on touch — they get stuck after tap */
+@media (hover: none) {
+  .hover\:bg-slate-800\/60:hover { background: transparent; }
+  .hover\:border-cyan-400\/50:hover { border-color: inherit; }
 }
 
 body {

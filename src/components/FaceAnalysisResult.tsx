@@ -68,25 +68,25 @@ export function FaceAnalysisResult() {
       {person && (
         <div
           className={cn(
-            "glass rounded-2xl p-4 flex items-center justify-between gap-4",
+            "glass rounded-2xl p-3 md:p-4 flex items-center justify-between gap-3",
             person.isReturning ? "border-emerald-400/40" : "border-cyan-400/40"
           )}
         >
-          <div>
-            <p className="font-semibold text-base md:text-lg text-slate-100">
+          <div className="min-w-0">
+            <p className="font-semibold text-sm md:text-lg text-slate-100 truncate">
               {person.isReturning ? "👋 Welcome back, " : "✨ "}
               <span className="bg-gradient-to-r from-cyan-400 to-electric bg-clip-text text-transparent">
                 {person.name}
               </span>
             </p>
             {person.isReturning && (
-              <p className="text-xs text-slate-400 mt-0.5 font-mono">
+              <p className="text-[10px] md:text-xs text-slate-400 mt-0.5 font-mono">
                 Visit #{person.visitCount} · Profile recognized
               </p>
             )}
           </div>
-          <Badge variant={person.isReturning ? "emerald" : "cyan"}>
-            {person.isReturning ? "RETURNING" : "NEW PROFILE"}
+          <Badge variant={person.isReturning ? "emerald" : "cyan"} className="shrink-0">
+            {person.isReturning ? "RETURNING" : "NEW"}
           </Badge>
         </div>
       )}
@@ -137,8 +137,8 @@ export function FaceAnalysisResult() {
 
       {/* Tabs */}
       <Tabs defaultValue="traits" className="w-full space-y-4">
-        <div className="overflow-x-auto -mx-2 px-2">
-          <TabsList className="flex-nowrap whitespace-nowrap">
+        <div className="overflow-x-auto -mx-2 px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <TabsList className="flex-nowrap whitespace-nowrap w-max">
             <TabsTrigger value="traits">Personality</TabsTrigger>
             <TabsTrigger value="strengths">จุดแข็ง</TabsTrigger>
             <TabsTrigger value="improvements">จุดปรับปรุง</TabsTrigger>
@@ -408,12 +408,12 @@ export function FaceAnalysisResult() {
 
       <ChatPanel />
 
-      <div className="flex flex-wrap gap-3 justify-center pt-4">
-        <Button variant="primary" onClick={() => exportToPdf("result-root", "candidate-report.pdf")}>
+      <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 justify-center pt-4">
+        <Button variant="primary" onClick={() => exportToPdf("result-root", "candidate-report.pdf")} className="w-full sm:w-auto">
           <Download className="mr-2 h-4 w-4" />
           Export PDF
         </Button>
-        <Button variant="outline" onClick={reset}>
+        <Button variant="outline" onClick={reset} className="w-full sm:w-auto">
           <RotateCcw className="mr-2 h-4 w-4" />
           วิเคราะห์คนใหม่
         </Button>
@@ -421,7 +421,7 @@ export function FaceAnalysisResult() {
           <Button
             variant="ghost"
             onClick={onDeleteMe}
-            className="text-rose-300 hover:bg-rose-500/10"
+            className="text-rose-300 hover:bg-rose-500/10 w-full sm:w-auto"
           >
             <Trash2 className="mr-2 h-4 w-4" />
             ลบ Biometric Profile
