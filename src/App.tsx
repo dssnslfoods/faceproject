@@ -118,9 +118,8 @@ export default function App() {
                 </span>
               </h2>
               <p className="text-slate-300 text-sm md:text-lg max-w-2xl mx-auto leading-relaxed font-th px-2">
-                เครื่องมือสำหรับ HR และ Talent Development —
-                วิเคราะห์ลักษณะ, จุดแข็ง-จุดปรับปรุง, ตำแหน่งงานที่เหมาะสม
-                และ Career Path จากการนำเสนอตัวของผู้สมัคร
+                ช่วย HR ตัดสินใจเร็วและแม่นยำขึ้น · วิเคราะห์ลักษณะนิสัย จุดแข็ง โอกาสพัฒนา
+                และเส้นทางสายอาชีพเฉพาะบุคคล จากข้อมูลที่สังเกตได้
               </p>
             </div>
 
