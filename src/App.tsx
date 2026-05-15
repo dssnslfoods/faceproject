@@ -5,11 +5,18 @@ import { FaceAnalysisResult } from "@/components/FaceAnalysisResult";
 import { ConsentDialog } from "@/components/ConsentDialog";
 import { Disclaimer } from "@/components/Disclaimer";
 import { Button } from "@/components/ui/button";
-import { X, Brain, Sparkles, ScanFace, BarChart3, RefreshCw } from "lucide-react";
+import { X, Brain, Sparkles, ScanFace, BarChart3, RefreshCw, Home } from "lucide-react";
 import { analyzeFace } from "@/lib/gemini";
 
 export default function App() {
-  const { stage, setStage, error, setError, capturedImage, setReading } = useAppStore();
+  const { stage, setStage, error, setError, capturedImage, setReading, reset } = useAppStore();
+
+  const goHome = () => {
+    if (stage === "result" || stage === "consent") {
+      if (!confirm("กลับหน้าหลัก? ข้อมูลที่ยังไม่ได้บันทึกจะหายไป")) return;
+    }
+    reset();
+  };
 
   const retry = async () => {
     if (!capturedImage) return;
@@ -27,16 +34,20 @@ export default function App() {
 
   return (
     <div className="min-h-screen text-slate-100 bg-grid">
-      <header className="relative border-b border-slate-800/60 backdrop-blur-xl bg-slate-950/40">
+      <header className="relative border-b border-slate-800/60 backdrop-blur-xl bg-slate-950/40 sticky top-0 z-30">
         <div className="container mx-auto px-4 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <button
+            onClick={goHome}
+            className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-xl"
+            aria-label="Home"
+          >
             <div className="relative">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-500 to-electric flex items-center justify-center shadow-glow">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-500 to-electric flex items-center justify-center shadow-glow transition-transform group-hover:scale-105">
                 <Brain className="h-6 w-6 text-slate-950" />
               </div>
-              <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-cyan-500 to-electric opacity-30 blur-md -z-10" />
+              <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-cyan-500 to-electric opacity-30 blur-md -z-10 group-hover:opacity-50 transition-opacity" />
             </div>
-            <div>
+            <div className="text-left">
               <h1 className="font-bold text-lg md:text-xl tracking-tight text-slate-50">
                 SMART HR{" "}
                 <span className="bg-gradient-to-r from-cyan-400 to-electric bg-clip-text text-transparent">
@@ -47,12 +58,19 @@ export default function App() {
                 Talent Insight Engine
               </p>
             </div>
-          </div>
-          <div className="hidden md:flex items-center gap-2 text-xs text-slate-400">
-            <div className="flex items-center gap-1.5">
+          </button>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-1.5 text-xs text-slate-400">
               <span className="h-2 w-2 rounded-full bg-emerald-400 pulse-glow" />
               <span className="font-mono">SYSTEM ONLINE</span>
             </div>
+            {stage !== "intro" && (
+              <Button variant="outline" size="sm" onClick={goHome} className="gap-1.5">
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">Home</span>
+              </Button>
+            )}
           </div>
         </div>
       </header>
