@@ -1,15 +1,19 @@
+import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { WebcamCapture } from "@/components/WebcamCapture";
 import { LoadingOracle } from "@/components/LoadingOracle";
 import { FaceAnalysisResult } from "@/components/FaceAnalysisResult";
 import { ConsentDialog } from "@/components/ConsentDialog";
 import { Disclaimer } from "@/components/Disclaimer";
+import { ManageProfiles } from "@/components/ManageProfiles";
 import { Button } from "@/components/ui/button";
-import { X, Brain, Sparkles, ScanFace, BarChart3, RefreshCw, Home } from "lucide-react";
+import { X, Brain, Sparkles, ScanFace, BarChart3, RefreshCw, Home, Users } from "lucide-react";
 import { analyzeFace } from "@/lib/gemini";
+import { supabaseEnabled } from "@/lib/supabase";
 
 export default function App() {
   const { stage, setStage, error, setError, capturedImage, setReading, reset } = useAppStore();
+  const [showManage, setShowManage] = useState(false);
 
   const goHome = () => {
     if (stage === "result" || stage === "consent") {
@@ -141,7 +145,7 @@ export default function App() {
 
             <Disclaimer />
 
-            <div className="text-center">
+            <div className="flex flex-col sm:flex-row gap-2.5 justify-center items-stretch sm:items-center">
               <Button
                 size="lg"
                 variant="primary"
@@ -151,6 +155,17 @@ export default function App() {
                 <ScanFace className="mr-2 h-5 w-5" />
                 เริ่มวิเคราะห์ Candidate
               </Button>
+              {supabaseEnabled && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setShowManage(true)}
+                  className="w-full sm:w-auto"
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  จัดการ Profiles
+                </Button>
+              )}
             </div>
           </div>
         )}
@@ -159,6 +174,8 @@ export default function App() {
         {stage === "consent" && <ConsentDialog />}
         {stage === "loading" && <LoadingOracle />}
         {stage === "result" && <FaceAnalysisResult />}
+
+        {showManage && <ManageProfiles onClose={() => setShowManage(false)} />}
       </main>
 
       <footer className="text-center text-xs py-4 md:py-6 safe-px safe-pb border-t border-slate-800/60 backdrop-blur-xl bg-slate-950/40 space-y-1">

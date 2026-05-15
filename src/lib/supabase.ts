@@ -17,7 +17,7 @@ export interface MatchedPerson {
   last_seen: string;
 }
 
-const MATCH_THRESHOLD = 0.6; // cosine distance — lower is more similar
+const MATCH_THRESHOLD = 0.42; // cosine distance — lower = more similar; 0.42 is strict for FaceNet
 
 export async function recognizeFace(embedding: number[]): Promise<MatchedPerson | null> {
   if (!supabase) return null;
@@ -58,5 +58,33 @@ export async function touchPerson(id: string): Promise<void> {
 export async function deletePerson(id: string): Promise<void> {
   if (!supabase) return;
   const { error } = await supabase.from("people").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+export interface StoredPerson {
+  id: string;
+  name: string;
+  thumbnail: string | null;
+  visit_count: number;
+  created_at: string;
+  last_seen: string;
+}
+
+export async function listPeople(): Promise<StoredPerson[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("people")
+    .select("id, name, thumbnail, visit_count, created_at, last_seen")
+    .order("last_seen", { ascending: false });
+  if (error) {
+    console.error("listPeople error:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function clearAllPeople(): Promise<void> {
+  if (!supabase) return;
+  const { error } = await supabase.from("people").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   if (error) throw new Error(error.message);
 }
