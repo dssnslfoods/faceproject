@@ -17,7 +17,13 @@ export interface MatchedPerson {
   last_seen: string;
 }
 
-const MATCH_THRESHOLD = 0.42; // cosine distance — lower = more similar; 0.42 is strict for FaceNet
+// L2 (Euclidean) distance threshold — face-api.js documented norms:
+//   < 0.4  = strong match (same person, high confidence)
+//   0.4–0.5 = likely same person
+//   0.5–0.6 = ambiguous
+//   > 0.6  = different person
+// We pick 0.5 for a balanced strict-but-usable default.
+const MATCH_THRESHOLD = 0.5;
 
 export async function recognizeFace(embedding: number[]): Promise<MatchedPerson | null> {
   if (!supabase) return null;

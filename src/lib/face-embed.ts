@@ -22,8 +22,13 @@ export async function computeDescriptor(
   source: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
 ): Promise<number[] | null> {
   await loadFaceModels();
+  // Use larger inputSize (416) and stricter score threshold for higher-quality
+  // embeddings. Slightly slower but much better recognition accuracy.
   const result = await faceapi
-    .detectSingleFace(source, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 }))
+    .detectSingleFace(
+      source,
+      new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.55 })
+    )
     .withFaceLandmarks()
     .withFaceDescriptor();
   if (!result) return null;
